@@ -227,8 +227,8 @@
             MOVE 0 TO WS-IDX-COURS
        
             ADD 1 TO WS-IDX-ETUD
-            
             ADD 1 TO WS-NBRE-ETUDIANT
+
             MOVE F-ENTREE-1000(3:7) TO WS-NOM(WS-IDX-ETUD)
             MOVE F-ENTREE-1000(10:6) TO WS-PRENOM(WS-IDX-ETUD)
             MOVE F-ENTREE-1000(16:2)TO WS-AGE(WS-IDX-ETUD)
@@ -237,9 +237,9 @@
             
            WHEN F-ENTREE-1000(1:2) = 02 
               
-            ADD 1 TO WS-IDX-COURS
-            
+            ADD 1 TO WS-IDX-COURS      
             ADD 1 TO WS-NBRE-COURS
+
             MOVE F-ENTREE-1000(3:21)
             TO   WS-MATIERE(WS-IDX-ETUD,WS-IDX-COURS)
        
@@ -247,8 +247,6 @@
             TO WS-COEF(WS-IDX-ETUD,WS-IDX-COURS)
 
            
-             
-             
             MOVE F-ENTREE-1000(27:5)
             TO WS-NOTE(WS-IDX-ETUD,WS-IDX-COURS)
                  
