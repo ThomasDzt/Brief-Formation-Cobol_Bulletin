@@ -111,7 +111,7 @@
                  15 WS-NOTE       PIC 99V99.        
 
       *Création d'une variable permettant de stocker le calcul de note * coeff pour chaque matière
-                 15 WS-NOTE-POND   PIC 99V999.
+                 15 WS-NOTE-POND  PIC 99V999.
 
       *Création d'une variable permettant de stocker la moyenne pour chaque matière             
                  15 WS-MOY-MAT    PIC 99V99.
@@ -130,6 +130,11 @@
       *Création d'une variable pour stocker la moyenne de classe  
        01 WS-MOYENNE-CLASSE       PIC 99V99.
 
+      *Création de variables de stockage temporaire pour le tri des matières 
+       01 WS-MATIERE-TEMPO        PIC X(21).
+       01 WS-NOTE-TEMPO           PIC 99V99.
+       01 WS-COEF-TEMPO           PIC 9V9.
+       
       *Création de variables d'en-tête pour l'affichage 
        01 WS-ENTETE-NOM           PIC X(07)      VALUE "Nom".
        01 WS-ENTETE-PRENOM        PIC X(08)      VALUE "Prenom".
@@ -147,7 +152,10 @@
       *Création d'index pour parcourir le tableau selon les dimensions
        77 WS-IDX-ETUD            PIC 9(03)        VALUE 0.      
        77 WS-IDX-COURS           PIC 9(03)        VALUE 0.
-      
+       
+       77 WS-IDX-COURS2          PIC 9(03)        VALUE 0.
+       77 WS-IDX-INCREMENT       PIC 9(03)        VALUE 0.
+
 
       *01 WS-DUMMY           PIC X.
       ****************************************************************** 
@@ -201,9 +209,12 @@
        CLOSE FICHIER-ENTREE.
        DISPLAY "Fermeture du fichier.".
 
+       
+       PERFORM 0120-TRI-DEBUT
+          THRU 0120-TRI-FIN.
 
-       PERFORM 0120-AFFICHE-DEBUT
-          THRU 0120-AFFICHE-FIN.
+       PERFORM 0130-AFFICHE-DEBUT
+          THRU 0130-AFFICHE-FIN.
 
        0100-LECTURE-FIN.
        EXIT.
@@ -248,8 +259,76 @@
        0110-TRAITEMENT-LECT-FIN.
        EXIT.
 
+      *----------------------------------------------------------------- 
+       0120-TRI-DEBUT.
+
+       SORT WS-ETUDIANT ON ASCENDING KEY WS-NOM.
+
+       
+       PERFORM VARYING WS-IDX-ETUD FROM 1 BY 1 
+               UNTIL WS-IDX-ETUD > WS-NBRE-ETUDIANT
+           
+           PERFORM VARYING WS-IDX-COURS FROM 1 BY 1 
+               UNTIL WS-IDX-COURS > WS-NBRE-COURS - 1
+
+               MOVE WS-IDX-COURS TO WS-IDX-INCREMENT
+               ADD 1 TO WS-IDX-INCREMENT
+               
+               PERFORM VARYING WS-IDX-COURS2 FROM WS-IDX-INCREMENT BY 1 
+               UNTIL WS-IDX-COURS2 > WS-NBRE-COURS
+
+
+                   IF WS-MATIERE(WS-IDX-ETUD,WS-IDX-COURS) > 
+                      WS-MATIERE(WS-IDX-ETUD,WS-IDX-COURS2) 
+
+                       PERFORM 0125-ECHANGE-TRI-DEBUT
+                          THRU 0125-ECHANGE-TRI-FIN
+
+                   END-IF 
+               END-PERFORM 
+           END-PERFORM 
+
+       END-PERFORM.
+
+
+       0120-TRI-FIN.
+       EXIT.
+
       *-----------------------------------------------------------------
-       0120-AFFICHE-DEBUT.
+       0125-ECHANGE-TRI-DEBUT.
+
+       MOVE WS-MATIERE(WS-IDX-ETUD,WS-IDX-COURS)
+       TO   WS-MATIERE-TEMPO.
+
+       MOVE WS-NOTE(WS-IDX-ETUD,WS-IDX-COURS)
+       TO   WS-NOTE-TEMPO.
+
+       MOVE WS-COEF(WS-IDX-ETUD,WS-IDX-COURS)
+       TO   WS-COEF-TEMPO.
+
+       MOVE WS-MATIERE(WS-IDX-ETUD,WS-IDX-COURS2)
+       TO   WS-MATIERE(WS-IDX-ETUD,WS-IDX-COURS).
+
+       MOVE WS-NOTE(WS-IDX-ETUD,WS-IDX-COURS2)
+       TO   WS-NOTE(WS-IDX-ETUD,WS-IDX-COURS).
+
+       MOVE WS-COEF(WS-IDX-ETUD,WS-IDX-COURS2)
+       TO   WS-COEF(WS-IDX-ETUD,WS-IDX-COURS).
+
+       MOVE WS-MATIERE-TEMPO
+       TO   WS-MATIERE(WS-IDX-ETUD,WS-IDX-COURS2).
+
+       MOVE WS-NOTE-TEMPO
+       TO   WS-NOTE(WS-IDX-ETUD,WS-IDX-COURS2).
+
+       MOVE WS-COEF-TEMPO
+       TO   WS-COEF(WS-IDX-ETUD,WS-IDX-COURS2).
+
+
+       0125-ECHANGE-TRI-FIN.
+       EXIT.
+      *-----------------------------------------------------------------
+       0130-AFFICHE-DEBUT.
 
        DISPLAY "Affichage du fichier stocké :".
 
@@ -290,7 +369,7 @@
            END-PERFORM 
        END-PERFORM.
 
-       0120-AFFICHE-FIN.
+       0130-AFFICHE-FIN.
        EXIT.
 
       *-----------------------------------------------------------------
