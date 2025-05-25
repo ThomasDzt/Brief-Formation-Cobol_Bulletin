@@ -38,11 +38,11 @@
            FILE STATUS IS F-STATUT-ENTREE.     
                    
        
-      *    SELECT FICHIER-SORTIE
-      *    ASSIGN TO 'output.dat'
-      *    ACCESS MODE IS SEQUENTIAL
-      *    ORGANIZATION IS LINE SEQUENTIAL
-      *    FILE STATUS IS F-OUTPUT-STATUS.     
+           SELECT FICHIER-SORTIE
+           ASSIGN TO 'output.dat'
+           ACCESS MODE IS SEQUENTIAL
+           ORGANIZATION IS LINE SEQUENTIAL
+           FILE STATUS IS F-STATUT-SORTIE.     
 
 
 
@@ -65,11 +65,11 @@
            01  F-ENTREE-1000    PIC X(1000).
               
        
-      *FD  FICHIER-SORTIE
-      *    RECORD CONTAINS 100 CHARACTERS
-      *    RECORDING MODE IS F.   
+       FD  FICHIER-SORTIE
+           RECORD CONTAINS 250 CHARACTERS
+           RECORDING MODE IS F.   
 
-      *    01 F-SORTIE        PIC X(100).
+           01 F-SORTIE        PIC X(250).
       *    
          
 
@@ -82,9 +82,9 @@
            88 F-STATUT-ENTREE-OK    VALUE '00'.        
            88 F-STATUT-ENTREE-FF    VALUE '10'.
 
-      *01  F-OUTPUT-STATUS     PIC X(02) VALUE SPACE.
-      *    88 F-OUTPUT-STATUS-OK    VALUE '00'.        
-      *    88 F-OUTPUT-STATUS-EOF   VALUE '10'.
+       01  F-STATUT-SORTIE     PIC X(02) VALUE SPACE.
+           88 F-STATUT-SORTIE-OK    VALUE '00'.        
+           88 F-STATUT-SORTIE-FF    VALUE '10'.
 
 
       *Création du tableau bidimensionnel de stockage des informations contenues dans le fichier
@@ -102,19 +102,22 @@
 
       *Création d'une variable permettant de stocker la moyenne pour chaque élève 
                10 WS-MOYENNE      PIC 99V99.
-
+               10 WS-MOYENNE-ED   PIC 99,99.
                10 WS-COURS     OCCURS 999 TIMES. 
                                
 
                  15 WS-MATIERE    PIC X(21).
                  15 WS-COEF       PIC 9V9.
-                 15 WS-NOTE       PIC 99V99.        
+                 15 WS-COEF-ED    PIC 9,9.
+                 15 WS-NOTE       PIC 99V99.   
+                 15 WS-NOTE-ED    PIC 99,99.     
 
       *Création d'une variable permettant de stocker le calcul de note * coeff pour chaque matière
                  15 WS-NOTE-POND  PIC 99V999.
 
       *Création d'une variable permettant de stocker la moyenne pour chaque matière             
                  15 WS-MOY-MAT    PIC 99V99.
+                 15 WS-MOY-MAT-ED PIC 99,99.
        
       *Création d'une variable permettant de stocker le calcul de moyenne * coeff pour chaque matière
                  15 WS-MOY-MAT-POND   PIC 99V999. 
@@ -129,26 +132,52 @@
        
       *Création d'une variable pour stocker la moyenne de classe  
        01 WS-MOYENNE-CLASSE       PIC 99V99.
+       01 WS-MOYENNE-CLASSE-ED    PIC 99,99.
 
       *Création de variables de stockage temporaire pour le tri des matières 
        01 WS-MATIERE-TEMPO        PIC X(21).
        01 WS-NOTE-TEMPO           PIC 99V99.
        01 WS-COEF-TEMPO           PIC 9V9.
        
-      *Création de variables d'en-tête pour l'affichage 
-       01 WS-ENTETE-NOM           PIC X(07)      VALUE "Nom".
-       01 WS-ENTETE-PRENOM        PIC X(08)      VALUE "Prenom".
-       01 WS-ENTETE-AGE           PIC X(03)      VALUE "Age".    
-       01 WS-ENTETE-MAT           PIC X(21)      VALUE "Matiere".     
-       01 WS-ENTETE-COEF          PIC X(05)      VALUE "Coef". 
-       01 WS-ENTETE-NOTE          PIC X(04)      VALUE "Note". 
-       01 WS-ENTETE-MOYENNE       PIC X(07)      VALUE "Moyenne". 
-       01 WS-ENTETE-MOY-CLS       PIC X(16)      VALUE "Moyenne classe". 
-       01 WS-ETOILE               PIC X(31)      VALUE ALL "*".
-       01 WS-TIRET                PIC X(31)      VALUE ALL "-".
+      *Création de variables d'en-tête pour l'affichage et l'écriture
+       01 WS-ENTETE-NOM           PIC X(07)   VALUE "NOM".
+       01 WS-ENTETE-PRENOM        PIC X(08)   VALUE "PRENOM".
+       01 WS-ENTETE-AGE           PIC X(03)   VALUE "AGE".    
+       01 WS-ENTETE-MAT           PIC X(21)   VALUE "MATIERE".     
+       01 WS-ENTETE-COEF          PIC X(05)   VALUE "COEF". 
+       01 WS-ENTETE-NOTE          PIC X(04)   VALUE "NOTE". 
+       01 WS-ENTETE-MOYENNE       PIC X(07)   VALUE "MOYENNE". 
+       01 WS-ENTETE-MOY-CLS       PIC X(16)   VALUE "MOYENNE CLASSE". 
+       01 WS-ETOILE               PIC X(31)   VALUE ALL "*".
+       01 WS-TIRET                PIC X(31)   VALUE ALL "-".
+   
+      *Création de variables d'en-tête pour l'écriture 
+       01 WS-ENT-ECRI-NOM           PIC X(18)   VALUE "NOM".
+       01 WS-ENT-ECRI-PRENOM        PIC X(18)   VALUE "PRENOM".
+       01 WS-ENT-ECRI-AGE           PIC X(23)   VALUE "AGE".    
+      *01 WS-ENT-ECRI-MAT           PIC X(21)   VALUE "MATIERE".     
+       01 WS-ENT-ECRI-COEF          PIC X(05)   VALUE "COEF". 
+       01 WS-ENT-ECRI-NOTE          PIC X(04)   VALUE "NOTE". 
+       01 WS-ENT-ECRI-MOYENNE       PIC X(30)   VALUE "MOYENNE". 
+      *01 WS-ENT-ECRI-MOY-CLS       PIC X(16)   VALUE "MOYENNE CLASSE".
+       01 WS-ENT-ECRI-CLASSE        PIC X(06)   VALUE "CLASSE".
+       01 WS-BULL                 PIC X(108)  VALUE "BULLETIN DE NOTES".   
 
-       
+       01 WS-ENTETE-COURS     OCCURS 6 TIMES.
+           05 WS-ENT-COURS-NUM      PIC X(06).
 
+       01 WS-LIBELLE             PIC X(10).  
+       01 WS-LIBELLE-NUM         PIC 9(01).
+
+      *Création de variables filler pour espacer les données de l'output
+
+       01 WS-FILLER-NOM          PIC X(11). 
+       01 WS-FILLER-PRENOM       PIC X(12).
+       01 WS-FILLER-AGE          PIC X(22).
+       01 WS-FILLER-COURS        PIC X(24).
+       01 WS-FILLER-NOTE         PIC X(25).
+       01 WS-FILLER-CLASSE       PIC X(54).
+      
       *Création d'index pour parcourir le tableau selon les dimensions
        77 WS-IDX-ETUD            PIC 9(03)        VALUE 0.      
        77 WS-IDX-COURS           PIC 9(03)        VALUE 0.
@@ -172,7 +201,9 @@
        PERFORM 0300-MOYENNE-MAT-DEBUT
           THRU 0300-MOYENNE-MAT-FIN.  
 
-       
+       PERFORM 0400-ECRITURE-DEBUT
+          THRU 0400-ECRITURE-FIN.
+
        STOP RUN. 
 
 
@@ -544,3 +575,213 @@
 
        0320-AFFICHE-MOY-MAT-FIN.
        EXIT. 
+
+
+      *----------------------------------------------------------------- 
+       0400-ECRITURE-DEBUT.
+       DISPLAY "Ouverture du fichier : ".
+       OPEN OUTPUT FICHIER-SORTIE.
+       DISPLAY "Ecriture du fichier : ".
+       
+      *Ecriture de l'en-tête du fichier de sortie 
+       PERFORM VARYING WS-IDX-COURS FROM 1 BY 1 
+           UNTIL WS-IDX-COURS > WS-NBRE-COURS
+           
+           MOVE WS-IDX-COURS TO WS-LIBELLE-NUM
+
+           STRING 
+           "COURS" DELIMITED BY SIZE 
+           WS-LIBELLE-NUM DELIMITED BY SIZE
+           INTO WS-LIBELLE
+           END-STRING 
+
+           MOVE WS-LIBELLE TO WS-ENT-COURS-NUM(WS-IDX-COURS)
+       END-PERFORM. 
+
+
+
+       MOVE ALL "*" TO F-SORTIE.
+       WRITE F-SORTIE.
+       
+       MOVE ALL SPACES TO F-SORTIE.
+       WRITE F-SORTIE.
+
+       MOVE SPACES TO F-SORTIE.
+       MOVE WS-BULL TO F-SORTIE(108:17).
+       WRITE F-SORTIE.
+
+       MOVE ALL SPACES TO F-SORTIE.
+       WRITE F-SORTIE.
+
+       MOVE ALL "*" TO F-SORTIE.
+       WRITE F-SORTIE.
+
+       MOVE ALL SPACES TO F-SORTIE.
+       WRITE F-SORTIE.
+
+       STRING 
+           WS-ENT-ECRI-NOM DELIMITED BY SIZE 
+           WS-ENT-ECRI-PRENOM DELIMITED BY SIZE 
+           WS-ENT-ECRI-AGE DELIMITED BY SIZE 
+
+           WS-ENT-COURS-NUM(1) DELIMITED BY SIZE
+           WS-FILLER-COURS DELIMITED BY SIZE
+
+           WS-ENT-COURS-NUM(2) DELIMITED BY SIZE
+           WS-FILLER-COURS DELIMITED BY SIZE
+
+           WS-ENT-COURS-NUM(3) DELIMITED BY SIZE
+           WS-FILLER-COURS DELIMITED BY SIZE
+
+           WS-ENT-COURS-NUM(4) DELIMITED BY SIZE
+           WS-FILLER-COURS DELIMITED BY SIZE
+
+           WS-ENT-COURS-NUM(5) DELIMITED BY SIZE
+           WS-FILLER-COURS DELIMITED BY SIZE
+
+           WS-ENT-COURS-NUM(6) DELIMITED BY SIZE
+           WS-FILLER-COURS DELIMITED BY SIZE
+
+           WS-ENT-ECRI-MOYENNE DELIMITED BY SIZE
+       INTO F-SORTIE
+       END-STRING. 
+
+     
+       WRITE F-SORTIE.
+
+       MOVE ALL "_" TO F-SORTIE.
+       WRITE F-SORTIE.
+
+      *Alimentation des variables d'édition pour l'écriture des variables numériques
+       PERFORM VARYING WS-IDX-ETUD FROM 1 BY 1 
+               UNTIL WS-IDX-ETUD > WS-NBRE-ETUDIANT 
+
+           
+
+           PERFORM VARYING WS-IDX-COURS FROM 1 BY 1 
+                   UNTIL WS-IDX-COURS > WS-NBRE-COURS
+
+               MOVE WS-NOTE(WS-IDX-ETUD WS-IDX-COURS)
+               TO   WS-NOTE-ED(WS-IDX-ETUD WS-IDX-COURS)
+       
+               MOVE WS-COEF(WS-IDX-ETUD WS-IDX-COURS)
+               TO   WS-COEF-ED(WS-IDX-ETUD WS-IDX-COURS)
+
+           END-PERFORM 
+
+           MOVE WS-MOYENNE(WS-IDX-ETUD) 
+           TO   WS-MOYENNE-ED(WS-IDX-ETUD)
+       END-PERFORM.
+
+
+       PERFORM VARYING WS-IDX-COURS FROM 1 BY 1 
+               UNTIL WS-IDX-COURS > WS-NBRE-COURS 
+
+
+               MOVE WS-MOY-MAT(WS-IDX-ETUD WS-IDX-COURS)
+               TO   WS-MOY-MAT-ED(WS-IDX-ETUD WS-IDX-COURS)
+               
+       END-PERFORM.
+
+
+       MOVE WS-MOYENNE-CLASSE TO WS-MOYENNE-CLASSE-ED.
+
+      *Ecriture des données du fichier : nom, prénom, âge, notes, moyenne par étudiant 
+       PERFORM VARYING WS-IDX-ETUD FROM 1 BY 1 
+           UNTIL WS-IDX-ETUD > WS-NBRE-ETUDIANT 
+           
+           MOVE ALL SPACES TO F-SORTIE
+           WRITE F-SORTIE
+           
+           STRING 
+            WS-NOM(WS-IDX-ETUD) DELIMITED BY SIZE 
+            WS-FILLER-NOM DELIMITED BY SIZE
+
+            WS-PRENOM(WS-IDX-ETUD) DELIMITED BY SIZE 
+            WS-FILLER-PRENOM DELIMITED BY SIZE
+
+            WS-AGE(WS-IDX-ETUD) DELIMITED BY SIZE 
+            WS-FILLER-AGE DELIMITED BY SIZE
+
+            WS-NOTE-ED(WS-IDX-ETUD 1) DELIMITED BY SIZE
+            WS-FILLER-NOTE DELIMITED BY SIZE
+
+            WS-NOTE-ED(WS-IDX-ETUD 2) DELIMITED BY SIZE
+            WS-FILLER-NOTE DELIMITED BY SIZE
+
+            WS-NOTE-ED(WS-IDX-ETUD 3) DELIMITED BY SIZE
+            WS-FILLER-NOTE DELIMITED BY SIZE
+
+            WS-NOTE-ED(WS-IDX-ETUD 4) DELIMITED BY SIZE
+            WS-FILLER-NOTE DELIMITED BY SIZE
+
+            WS-NOTE-ED(WS-IDX-ETUD 5) DELIMITED BY SIZE
+            WS-FILLER-NOTE DELIMITED BY SIZE
+
+            WS-NOTE-ED(WS-IDX-ETUD 6) DELIMITED BY SIZE
+            WS-FILLER-NOTE DELIMITED BY SIZE
+
+            WS-MOYENNE-ED(WS-IDX-ETUD) DELIMITED BY SIZE
+            
+           INTO F-SORTIE
+           END-STRING
+
+         WRITE F-SORTIE
+       END-PERFORM.
+       
+       MOVE ALL "-" TO F-SORTIE.
+       WRITE F-SORTIE.
+       
+       MOVE ALL SPACES TO F-SORTIE.
+       WRITE F-SORTIE.
+
+       
+      *Ecriture de la ligne des moyennes par matière et de la moyenne de classe 
+       STRING 
+        
+           WS-ENT-ECRI-CLASSE DELIMITED BY SIZE
+           WS-FILLER-CLASSE   DELIMITED BY SIZE
+           
+           WS-MOY-MAT-ED(WS-IDX-ETUD 1) DELIMITED BY SIZE
+           WS-FILLER-NOTE DELIMITED BY SIZE
+       
+           WS-MOY-MAT-ED(WS-IDX-ETUD 2) DELIMITED BY SIZE
+           WS-FILLER-NOTE DELIMITED BY SIZE
+       
+           WS-MOY-MAT-ED(WS-IDX-ETUD 3) DELIMITED BY SIZE
+           WS-FILLER-NOTE DELIMITED BY SIZE
+       
+           WS-MOY-MAT-ED(WS-IDX-ETUD 4) DELIMITED BY SIZE
+           WS-FILLER-NOTE DELIMITED BY SIZE
+       
+           WS-MOY-MAT-ED(WS-IDX-ETUD 5) DELIMITED BY SIZE
+           WS-FILLER-NOTE DELIMITED BY SIZE
+       
+           WS-MOY-MAT-ED(WS-IDX-ETUD 6) DELIMITED BY SIZE
+           WS-FILLER-NOTE DELIMITED BY SIZE
+       
+           
+           WS-MOYENNE-CLASSE-ED DELIMITED BY SIZE
+
+       INTO F-SORTIE 
+       END-STRING.
+       
+       WRITE F-SORTIE.
+       
+       MOVE ALL SPACES TO F-SORTIE.
+       WRITE F-SORTIE.
+
+       MOVE ALL "*" TO F-SORTIE.
+       WRITE F-SORTIE.
+
+      *Ecriture de la légende (cours et coefficients) 
+
+       
+       
+       DISPLAY "Fermeture du fichier".
+       CLOSE FICHIER-SORTIE.
+
+       0400-ECRITURE-FIN.
+       EXIT.
+
+
