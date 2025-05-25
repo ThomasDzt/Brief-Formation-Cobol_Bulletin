@@ -26,10 +26,10 @@
       *----------------------------------------------------------------- 
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
-      *Création de l'alias pour le fichier d'entrée 
+      *Création des alias pour les fichiers d'entrée et de sortie
       *Les enregistrements des fichiers sont définis de manière séquentielle pour le traitement 
       *Les enregistrements suivent une organisation séquentielle (ligne par ligne)
-      *Création d'une variable de contrôle du statut du fichier 
+      *Création de variables de contrôle du statut des fichiers 
 
 
            SELECT FICHIER-ENTREE ASSIGN TO 'input.dat'
@@ -59,19 +59,17 @@
            RECORD CONTAINS 2 TO 1000 CHARACTERS 
            RECORDING MODE IS V.
        
-      *    01  F-ENTREE-2       PIC 9(02).
-      *    01  F-ENTREE-10      PIC X(10).
-      *    01  F-ENTREE-100     PIC X(100).
            01  F-ENTREE-1000    PIC X(1000).
-              
+         
        
+      *Description du fichier: les enregistrements sont de taille fixe
+      *Ils contiennent 250 caractères. 
        FD  FICHIER-SORTIE
            RECORD CONTAINS 250 CHARACTERS
            RECORDING MODE IS F.   
 
-           01 F-SORTIE        PIC X(250).
-      *    
-         
+           01 F-SORTIE          PIC X(250).
+             
 
       *----------------------------------------------------------------- 
        WORKING-STORAGE SECTION.
@@ -82,7 +80,7 @@
            88 F-STATUT-ENTREE-OK    VALUE '00'.        
            88 F-STATUT-ENTREE-FF    VALUE '10'.
 
-       01  F-STATUT-SORTIE     PIC X(02) VALUE SPACE.
+       01  F-STATUT-SORTIE      PIC X(02) VALUE SPACE.
            88 F-STATUT-SORTIE-OK    VALUE '00'.        
            88 F-STATUT-SORTIE-FF    VALUE '10'.
 
@@ -90,35 +88,35 @@
       *Création du tableau bidimensionnel de stockage des informations contenues dans le fichier
       *Celui-ci sera de taille variable selon le nombre d'étudiants et le nombre de cours 
        01  WS-DONNEE-ETUDIANT.
-           05 WS-NBRE-ETUDIANT    PIC 9(03)        VALUE 0.
-           05 WS-NBRE-COURS       PIC 9(03)        VALUE 0.
-           05 WS-NBRE-NOTES       PIC 9(03)        VALUE 0.
+           05 WS-NBRE-ETUDIANT        PIC 9(03)        VALUE 0.
+           05 WS-NBRE-COURS           PIC 9(03)        VALUE 0.
+           05 WS-NBRE-NOTES           PIC 9(03)        VALUE 0.
 
            05 WS-ETUDIANT      OCCURS 1 TO 999 TIMES 
                                DEPENDING ON WS-NBRE-ETUDIANT.
                
-               10 WS-NOM          PIC X(07).
-               10 WS-PRENOM       PIC X(06).      
-               10 WS-AGE          PIC 9(02).
+               10 WS-NOM              PIC X(07).
+               10 WS-PRENOM           PIC X(06).      
+               10 WS-AGE              PIC 9(02).
 
       *Création d'une variable permettant de stocker la moyenne pour chaque élève 
-               10 WS-MOYENNE      PIC 99V99.
-               10 WS-MOYENNE-ED   PIC 99,99.
+               10 WS-MOYENNE          PIC 99V99.
+               10 WS-MOYENNE-ED       PIC 99,99.
                10 WS-COURS     OCCURS 999 TIMES. 
                                
 
-                 15 WS-MATIERE    PIC X(21).
-                 15 WS-COEF       PIC 9V9.
-                 15 WS-COEF-ED    PIC 9,9.
-                 15 WS-NOTE       PIC 99V99.   
-                 15 WS-NOTE-ED    PIC 99,99.     
+                 15 WS-MATIERE        PIC X(21).
+                 15 WS-COEF           PIC 9V9.
+                 15 WS-COEF-ED        PIC 9,9.
+                 15 WS-NOTE           PIC 99V99.   
+                 15 WS-NOTE-ED        PIC 99,99.     
 
       *Création d'une variable permettant de stocker le calcul de note * coeff pour chaque matière
-                 15 WS-NOTE-POND  PIC 99V999.
+                 15 WS-NOTE-POND      PIC 99V999.
 
       *Création d'une variable permettant de stocker la moyenne pour chaque matière             
-                 15 WS-MOY-MAT    PIC 99V99.
-                 15 WS-MOY-MAT-ED PIC 99,99.
+                 15 WS-MOY-MAT        PIC 99V99.
+                 15 WS-MOY-MAT-ED     PIC 99,99.
        
       *Création d'une variable permettant de stocker le calcul de moyenne * coeff pour chaque matière
                  15 WS-MOY-MAT-POND   PIC 99V999. 
@@ -153,42 +151,42 @@
        01 WS-TIRET                PIC X(31)   VALUE ALL "-".
    
       *Création de variables d'en-tête pour l'écriture 
-       01 WS-ENT-ECRI-NOM           PIC X(18)   VALUE "NOM".
-       01 WS-ENT-ECRI-PRENOM        PIC X(18)   VALUE "PRENOM".
-       01 WS-ENT-ECRI-AGE           PIC X(23)   VALUE "AGE".    
-      *01 WS-ENT-ECRI-MAT           PIC X(21)   VALUE "MATIERE".     
-       01 WS-ENT-ECRI-COEF          PIC X(04)   VALUE "COEF". 
-       01 WS-ENT-ECRI-NOTE          PIC X(04)   VALUE "NOTE". 
-       01 WS-ENT-ECRI-MOYENNE       PIC X(30)   VALUE "MOYENNE". 
-      *01 WS-ENT-ECRI-MOY-CLS       PIC X(16)   VALUE "MOYENNE CLASSE".
-       01 WS-ENT-ECRI-CLASSE        PIC X(06)   VALUE "CLASSE".
+       01 WS-ENT-ECRI-NOM         PIC X(18)   VALUE "NOM".
+       01 WS-ENT-ECRI-PRENOM      PIC X(18)   VALUE "PRENOM".
+       01 WS-ENT-ECRI-AGE         PIC X(23)   VALUE "AGE".    
+   
+       01 WS-ENT-ECRI-COEF        PIC X(04)   VALUE "COEF". 
+       01 WS-ENT-ECRI-NOTE        PIC X(04)   VALUE "NOTE". 
+       01 WS-ENT-ECRI-MOYENNE     PIC X(30)   VALUE "MOYENNE". 
+   
+       01 WS-ENT-ECRI-CLASSE      PIC X(06)   VALUE "CLASSE".
        01 WS-BULL                 PIC X(108)  VALUE "BULLETIN DE NOTES".
-       01 WS-BAS-PAGE             PIC X(108)  VALUE "FIN DE RAPPORT".   
+       01 WS-BAS-PAGE             PIC X(108)  VALUE "FIN DU RAPPORT".   
 
        01 WS-ENTETE-COURS     OCCURS 6 TIMES.
-           05 WS-ENT-COURS-NUM      PIC X(06).
+           05 WS-ENT-COURS-NUM    PIC X(06).
 
-       01 WS-LIBELLE             PIC X(10).  
-       01 WS-LIBELLE-NUM         PIC 9(01).
+       01 WS-LIBELLE              PIC X(10).  
+       01 WS-LIBELLE-NUM          PIC 9(01).
 
       *Création de variables filler pour espacer les données de l'output
 
-       01 WS-FILLER-NOM          PIC X(11). 
-       01 WS-FILLER-PRENOM       PIC X(12).
-       01 WS-FILLER-AGE          PIC X(22).
-       01 WS-FILLER-COURS        PIC X(24).
-       01 WS-FILLER-NOTE         PIC X(25).
-       01 WS-FILLER-CLASSE       PIC X(54).
+       01 WS-FILLER-NOM           PIC X(11). 
+       01 WS-FILLER-PRENOM        PIC X(12).
+       01 WS-FILLER-AGE           PIC X(22).
+       01 WS-FILLER-COURS         PIC X(24).
+       01 WS-FILLER-NOTE          PIC X(25).
+       01 WS-FILLER-CLASSE        PIC X(54).
       
       *Création d'index pour parcourir le tableau selon les dimensions
-       77 WS-IDX-ETUD            PIC 9(03)        VALUE 0.      
-       77 WS-IDX-COURS           PIC 9(03)        VALUE 0.
-       
-       77 WS-IDX-COURS2          PIC 9(03)        VALUE 0.
-       77 WS-IDX-INCREMENT       PIC 9(03)        VALUE 0.
+       77 WS-IDX-ETUD             PIC 9(03)        VALUE 0.      
+       77 WS-IDX-COURS            PIC 9(03)        VALUE 0.
+        
+       77 WS-IDX-COURS2           PIC 9(03)        VALUE 0.
+       77 WS-IDX-INCREMENT        PIC 9(03)        VALUE 0.
 
 
-      *01 WS-DUMMY           PIC X.
+      
       ****************************************************************** 
       *                      PROCEDURE DIVISION                        *
       ****************************************************************** 
@@ -254,6 +252,8 @@
 
       *-----------------------------------------------------------------
        0110-TRAITEMENT-LECT-DEBUT.
+
+      *Remplissage du tableau de stockage selon la clé en début d'enregistrement (étudiant ou cours) 
        EVALUATE TRUE 
            WHEN F-ENTREE-1000(1:2) = 01 
             MOVE 0 TO WS-NBRE-COURS
@@ -293,9 +293,11 @@
       *----------------------------------------------------------------- 
        0120-TRI-DEBUT.
 
+      *Tri des étudiants par ordre alphabétique selon leur nom de famille 
        SORT WS-ETUDIANT ON ASCENDING KEY WS-NOM.
 
-       
+
+      *Tri des matières par ordre alphabétique selon le libellé 
        PERFORM VARYING WS-IDX-ETUD FROM 1 BY 1 
                UNTIL WS-IDX-ETUD > WS-NBRE-ETUDIANT
            
@@ -328,6 +330,7 @@
       *-----------------------------------------------------------------
        0125-ECHANGE-TRI-DEBUT.
 
+      *Processus de tri des matières 
        MOVE WS-MATIERE(WS-IDX-ETUD,WS-IDX-COURS)
        TO   WS-MATIERE-TEMPO.
 
@@ -361,6 +364,7 @@
       *-----------------------------------------------------------------
        0130-AFFICHE-DEBUT.
 
+      *Affichage des éléments du tableau de stockage avec en-têtes 
        DISPLAY "Affichage du fichier stocké :".
 
        PERFORM VARYING WS-IDX-ETUD FROM 1 BY 1 
@@ -406,6 +410,7 @@
       *-----------------------------------------------------------------
        0200-MOYENNE-ETU-DEBUT.
       
+      *Calcul de la moyenne par étudiant
        PERFORM VARYING WS-IDX-ETUD FROM 1 BY 1 
                UNTIL WS-IDX-ETUD > WS-NBRE-ETUDIANT
         
@@ -484,7 +489,7 @@
       *-----------------------------------------------------------------
        0300-MOYENNE-MAT-DEBUT.
       
-       
+      *Calcul de la moyenne par matière  
        PERFORM VARYING WS-IDX-COURS FROM 1 BY 1 
                UNTIL WS-IDX-COURS > WS-NBRE-COURS
            
@@ -492,15 +497,14 @@
            PERFORM VARYING WS-IDX-ETUD FROM 1 BY 1 
                    UNTIL WS-IDX-ETUD > WS-NBRE-ETUDIANT
 
-      *    DISPLAY WS-NOTE(WS-IDX-ETUD, WS-IDX-COURS)
-      *    ACCEPT WS-DUMMY
+     
                ADD WS-NOTE(WS-IDX-ETUD,WS-IDX-COURS)
                TO  WS-SOMME
-      *        DISPLAY "somme/matiere" WS-SOM-NOTE-MAT
+      
            END-PERFORM     
            COMPUTE WS-MOY-MAT(WS-IDX-ETUD,WS-IDX-COURS) ROUNDED = 
                    WS-SOMME / WS-NBRE-ETUDIANT
-      *    DISPLAY "moy/mat" WS-MOY-MAT(WS-IDX-ETUD,WS-IDX-COURS)
+      
             
        END-PERFORM.
 
@@ -519,6 +523,7 @@
        
        0310-MOYENNE-CLASSE-DEBUT.
 
+      *Calcul de la moyenne de la classe 
        MOVE 0 TO WS-SOMME.
        MOVE 0 TO WS-TOT-COEF.
        PERFORM VARYING WS-IDX-COURS FROM 1 BY 1 
@@ -533,11 +538,11 @@
 
            ADD WS-MOY-MAT-POND(WS-IDX-ETUD,WS-IDX-COURS)
            TO  WS-SOMME
-      *    DISPLAY WS-SOMME
+      
            
            ADD WS-COEF(1,WS-IDX-COURS)
            TO  WS-TOT-COEF 
-      *    DISPLAY WS-TOT-COEF 
+       
 
 
        END-PERFORM.
@@ -777,8 +782,7 @@
        WRITE F-SORTIE.
 
       *Ecriture de la légende (cours et coefficients) 
-      *MOVE ALL SPACES TO F-SORTIE.
-      *WRITE F-SORTIE.
+      
        
        PERFORM VARYING WS-IDX-COURS FROM 1 BY 1 
                UNTIL WS-IDX-COURS > WS-NBRE-COURS
