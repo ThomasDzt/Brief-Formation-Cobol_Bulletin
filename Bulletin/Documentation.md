@@ -40,23 +40,36 @@ Enfin j'ai décidé de me faire un paragraphe d'affichage afin de contrôler si 
 
 ## Jour 2 - Calcul des moyennes par élève et par matière
 
-Création d'une variable permettant de stocker le calcul de note * coeff pour chaque matière
+### Description de la DATA DIVISION
 
-Création d'une variable permettant de stocker le calcul de somme pondérée pour chaque matière
+Afin de pouvoir calculer les moyennes des étudiants, des variables permettant de stocker les calculs intermédiaires ont été créées : 
 
-Création d'une variable permettant de stocker le total des coeff
+- `WS-NOTE-POND` pour stocker le calcul de note * coefficient pour chaque matière
+  
+- `WS-SOMME` pour stocker le calcul de somme pondérée des notes par étudiant pour toutes les matières et la somme des notes par matière pour tous les étudiants
+  
+- `WS-TOT-COEF` pour stocker le total des coefficients
+  
+- `WS-MOYENNE` pour stocker la moyenne pour chaque élève
+  
+- `WS-MOY-MAT` pour stocker la moyenne pour chaque matière
+  
+- `WS-MOY-MAT-POND` pour stocker le calcul de moyenne matière * coefficient
+  
+- `WS-MOYENNE-CLASSE` pour stocker la moyenne de la classe
 
-Création d'une variable permettant de stocker la moyenne pour chaque élève
 
-moyenne = (somme pondérée des notes)/total des coeff
+### Description de la PROCEDURE DIVISION
 
-Création d'une variable permettant de stocker la moyenne pour chaque matière
+Les calculs ont été effectués comme suit :
 
-Moyenne pour chaque matiere = moyenne de chaque élève / nombre élève
+Moyenne = (Somme pondérée des notes)/Total des coefficients
 
-Création d'une variable permettant de stocker le calcul de moyenne matiere * coeff
+Moyenne pour chaque matière = Moyenne de chaque élève / Nombre élèves
 
-Création d'une variable permettant de stocker la moyenne de la classe
+Moyenne classe = (Moyenne matière * coefficients)/ Total coefficients
 
-Moyenne classe = (moyenne matiere * coeff)/ total coeff
+Chacun de ces résultats a été arrondi à l'aide du verbe `ROUNDED`.
+
+Au début j'avais du mal à concevoir comment accéder à la moyenne par matière cependant j'ai décidé d'inverser mes boucles par rapport à celles effectuées pour pouvoir déterminer la moyenne par étudiants. Ainsi je peux parcourir les notes de tous les étudiants pour chaque matière et ainsi déterminer la moyenne par matière.
 
