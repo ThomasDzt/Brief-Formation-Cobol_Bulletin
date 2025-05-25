@@ -92,6 +92,7 @@
        01  WS-DONNEE-ETUDIANT.
            05 WS-NBRE-ETUDIANT    PIC 9(03)        VALUE 0.
            05 WS-NBRE-COURS       PIC 9(03)        VALUE 0.
+           05 WS-NBRE-NOTES       PIC 9(03)        VALUE 0.
 
            05 WS-ETUDIANT      OCCURS 1 TO 999 TIMES 
                                DEPENDING ON WS-NBRE-ETUDIANT.
@@ -156,12 +157,13 @@
        01 WS-ENT-ECRI-PRENOM        PIC X(18)   VALUE "PRENOM".
        01 WS-ENT-ECRI-AGE           PIC X(23)   VALUE "AGE".    
       *01 WS-ENT-ECRI-MAT           PIC X(21)   VALUE "MATIERE".     
-       01 WS-ENT-ECRI-COEF          PIC X(05)   VALUE "COEF". 
+       01 WS-ENT-ECRI-COEF          PIC X(04)   VALUE "COEF". 
        01 WS-ENT-ECRI-NOTE          PIC X(04)   VALUE "NOTE". 
        01 WS-ENT-ECRI-MOYENNE       PIC X(30)   VALUE "MOYENNE". 
       *01 WS-ENT-ECRI-MOY-CLS       PIC X(16)   VALUE "MOYENNE CLASSE".
        01 WS-ENT-ECRI-CLASSE        PIC X(06)   VALUE "CLASSE".
-       01 WS-BULL                 PIC X(108)  VALUE "BULLETIN DE NOTES".   
+       01 WS-BULL                 PIC X(108)  VALUE "BULLETIN DE NOTES".
+       01 WS-BAS-PAGE             PIC X(108)  VALUE "FIN DE RAPPORT".   
 
        01 WS-ENTETE-COURS     OCCURS 6 TIMES.
            05 WS-ENT-COURS-NUM      PIC X(06).
@@ -775,9 +777,100 @@
        WRITE F-SORTIE.
 
       *Ecriture de la légende (cours et coefficients) 
+      *MOVE ALL SPACES TO F-SORTIE.
+      *WRITE F-SORTIE.
+       
+       PERFORM VARYING WS-IDX-COURS FROM 1 BY 1 
+               UNTIL WS-IDX-COURS > WS-NBRE-COURS
+
+           MOVE ALL SPACES TO F-SORTIE
+           WRITE F-SORTIE
+
+           STRING 
+               
+       
+             WS-ENT-COURS-NUM(WS-IDX-COURS) DELIMITED BY SIZE
+             ": "
+             WS-MATIERE(1 WS-IDX-COURS) DELIMITED BY SIZE
+
+             WS-FILLER-NOM DELIMITED BY SIZE
+     
+             WS-ENT-ECRI-COEF DELIMITED BY SIZE
+             ": "
+             WS-COEF-ED(1 WS-IDX-COURS) DELIMITED BY SIZE
+       
+              
+           INTO F-SORTIE
+           END-STRING
+           
+           WRITE F-SORTIE 
+       END-PERFORM.
+       
+       MOVE ALL SPACES TO F-SORTIE.
+       WRITE F-SORTIE.
+
+       MOVE ALL "*" TO F-SORTIE.
+       WRITE F-SORTIE.
+
+      *Ecriture des statistiques sur le nombre d'élèves, de notes et de cours 
+      
+       COMPUTE WS-NBRE-NOTES = WS-NBRE-ETUDIANT * WS-NBRE-COURS.
+       
+
+       MOVE ALL SPACES TO F-SORTIE.
+       WRITE F-SORTIE.
+
+       STRING      
+         "NOMBRE D'ETUDIANTS : "
+         WS-NBRE-ETUDIANT 
+       INTO F-SORTIE 
+       END-STRING.
+
+       WRITE F-SORTIE.
 
        
+       MOVE ALL SPACES TO F-SORTIE.
+       WRITE F-SORTIE.
+
+       STRING     
+         "NOMBRE DE COURS : "
+         WS-NBRE-COURS 
+       INTO F-SORTIE 
+       END-STRING.
+
+       WRITE F-SORTIE. 
+
+
+       MOVE ALL SPACES TO F-SORTIE.
+       WRITE F-SORTIE.
+
+       STRING         
+         "NOMBRE DE NOTES : "
+         WS-NBRE-NOTES 
+       INTO F-SORTIE 
+       END-STRING.
        
+       WRITE F-SORTIE.
+
+      *Ecriture du bas de page 
+       MOVE ALL SPACES TO F-SORTIE.
+       WRITE F-SORTIE.
+       
+       MOVE ALL "*" TO F-SORTIE.
+       WRITE F-SORTIE.
+
+       MOVE ALL SPACES TO F-SORTIE.
+       WRITE F-SORTIE.
+       MOVE WS-BAS-PAGE TO F-SORTIE(108:14).
+       WRITE F-SORTIE.
+
+
+       MOVE ALL SPACES TO F-SORTIE.
+       WRITE F-SORTIE.
+
+       MOVE ALL "*" TO F-SORTIE.
+       WRITE F-SORTIE.
+
        DISPLAY "Fermeture du fichier".
        CLOSE FICHIER-SORTIE.
 
